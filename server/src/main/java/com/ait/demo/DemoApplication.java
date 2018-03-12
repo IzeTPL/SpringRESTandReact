@@ -1,12 +1,14 @@
-package com.ait.ait;
+package com.ait.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AitApplication {
+public class DemoApplication {
+
 
 	public static void main(String[] args) {
-		SpringApplication.run(AitApplication.class, args);
+		SpringApplication.run(DemoApplication.class, args);
 	}
+
 }

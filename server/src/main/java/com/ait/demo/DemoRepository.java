@@ -1,6 +1,7 @@
 package com.ait.demo;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-interface DemoRepository extends JpaRepository<Demo, Long> {
+public interface DemoRepository extends MongoRepository<Demo, String> {
+
 }

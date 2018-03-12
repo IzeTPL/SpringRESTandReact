@@ -1,0 +1,3 @@
+/journal/*
+WiredTiger.lock
+mongod.lock
