@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as Ui from 'material-ui'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import * as axios from "axios";
+import Auth from "./Auth";
 
 class Demo extends React.Component {
     instance = null;
@@ -18,7 +19,7 @@ class Demo extends React.Component {
         };
         this.instance = axios.create({
             baseURL: 'http://localhost:8080/demo',
-            //headers: {'Authorization': 'Bearer ' + Auth.getToken()}
+            headers: {'Authorization': 'Bearer ' + Auth.getToken()}
         });
     }
     render(){
@@ -37,7 +38,7 @@ class Demo extends React.Component {
         );
     }
 
-    DemoList = (props) => {
+/*    DemoList = (props) => {
         const demoEntries = props.demos;
         const listItems = demoEntries.map((demo) =>
             <Ui.ListItem key={demo.id}
@@ -48,7 +49,7 @@ class Demo extends React.Component {
         return (
             <Ui.List>{listItems} </Ui.List>
         );
-    };
+    };*/
 /*    handleAuthorClick = (demo) => {
         this.setState({selectedDemoEntry: demo});
     };*/

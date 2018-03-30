@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import './App.css';
 import Demo from "./Demo";
 import Navigation from "./Navigation";
+import Login from "./Login";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 
 class App extends Component {
@@ -23,6 +24,7 @@ class App extends Component {
                 <div>
                     <Navigation/>
                     <Switch>
+                        <Route path='/login' component={Login}/>
                         <Route path='/demo' component={Demo}/>
                         <Route render={() => <h1>Page not found</h1>}/>
                     </Switch>
