@@ -2,12 +2,10 @@ package com.ait.controller;
 
 import com.ait.model.Post;
 import com.ait.repository.PostRepository;
-import com.ait.security.UserPrincipal;
+import com.ait.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.ait.model.User;
 
@@ -17,10 +15,12 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    private final PostRepository postRepository;
+    private PostRepository postRepository;
+    private UserRepository userRepository;
 
-    public PostController(PostRepository repository) {
+    public PostController(PostRepository repository, UserRepository userRepository) {
         this.postRepository = repository;
+        this.userRepository = userRepository;
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
@@ -32,12 +32,11 @@ public class PostController {
     }
 
     @PostMapping("/post/create")
-    public Post createEntry(@Valid @RequestBody Post post) {
+    public Post createPost(@Valid @RequestBody Post post) {
 
         System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
-        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = new User();
+        User user = userRepository.findByUsername( (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
 
         post.setAuthor(user);
 
@@ -45,8 +44,21 @@ public class PostController {
 
     }
 
+    @GetMapping("/post/{id}")
+    public ResponseEntity<Post> getPost(@PathVariable("id") String id) {
+
+        if(postRepository.findById(id).isPresent()) {
+
+            return new ResponseEntity<>(postRepository.findById(id).get(), HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    }
+
     @PutMapping("/post/{id}")
-    public ResponseEntity<Post> updateCustomer(@PathVariable("id") String id, @RequestBody Post post) {
+    public ResponseEntity<Post> updatePost(@PathVariable("id") String id, @RequestBody Post post) {
 
         if(postRepository.findById(id).isPresent()) {
 
@@ -63,18 +75,10 @@ public class PostController {
     }
 
     @DeleteMapping("/post/{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable("id") String id) {
+    public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
 
         postRepository.deleteById(id);
         return new ResponseEntity<>("Entry has been deleted!", HttpStatus.OK);
-
-    }
-
-    @DeleteMapping("/post/delete")
-    public ResponseEntity<String> deleteAllCustomers() {
-
-        postRepository.deleteAll();
-        return new ResponseEntity<>("All entries have been deleted!", HttpStatus.OK);
 
     }
 

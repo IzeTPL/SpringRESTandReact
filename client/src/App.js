@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import './App.css';
-import Demo from "./Demo";
 import Navigation from "./Navigation";
 import Login from "./Login";
+import Post from "./Post"
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 
 class App extends Component {
@@ -25,7 +25,7 @@ class App extends Component {
                     <Navigation/>
                     <Switch>
                         <Route path='/login' component={Login}/>
-                        <Route path='/demo' component={Demo}/>
+                        <Route path='/post' component={Post}/>
                         <Route render={() => <h1>Page not found</h1>}/>
                     </Switch>
                 </div>

@@ -29,6 +29,7 @@ public class UserDetailsServiceImplementation implements UserDetailsService {
         }
 
         //return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Collections.emptyList());
+        System.out.println("loadUserByUsername");
         return new UserPrincipal(user, Collections.emptyList());
 
     }

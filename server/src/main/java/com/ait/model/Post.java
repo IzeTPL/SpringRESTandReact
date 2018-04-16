@@ -4,15 +4,21 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document(collection = "post")
 public class Post {
 
     @Id
     private String id;
     private String name;
+    private String content;
 
     @DBRef
     private User author;
+
+    @DBRef
+    private List<String> tags;
 
     public String getId() {
         return id;
@@ -36,5 +42,21 @@ public class Post {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 }
