@@ -1,6 +1,7 @@
 package com.ait.model;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,8 +23,10 @@ public class User {
 
     private String password;
 
-    @DBRef
-    private List<Post> posts;
+    private List<String> posts;
+
+    @Transient
+    private boolean keepLogged;
 
     public String getId() {
         return id;
@@ -45,4 +48,11 @@ public class User {
         this.password = password;
     }
 
+    public boolean isKeepLogged() {
+        return keepLogged;
+    }
+
+    public void setKeepLogged(boolean keepLogged) {
+        this.keepLogged = keepLogged;
+    }
 }

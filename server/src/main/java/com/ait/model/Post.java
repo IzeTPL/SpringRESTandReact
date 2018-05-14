@@ -14,10 +14,8 @@ public class Post {
     private String name;
     private String content;
 
-    @DBRef
-    private User author;
+    private String author;
 
-    @DBRef
     private List<String> tags;
 
     public String getId() {
@@ -36,11 +34,11 @@ public class Post {
         this.name = name;
     }
 
-    public User getAuthor() {
+    public String getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(String author) {
         this.author = author;
     }
 

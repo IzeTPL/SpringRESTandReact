@@ -77,7 +77,7 @@ public class DatabaseInitilizer implements ApplicationRunner {
             post = new Post();
             post.setName(dataFactory.getRandomText(30));
             post.setContent(dataFactory.getRandomText(300));
-            post.setAuthor(userArrayList.get(rand.nextInt(userArrayList.size())));
+            post.setAuthor(userArrayList.get(rand.nextInt(userArrayList.size())).getId());
             postRepository.save(post);
 
         }

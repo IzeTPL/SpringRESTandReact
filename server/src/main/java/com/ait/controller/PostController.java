@@ -12,6 +12,7 @@ import com.ait.model.User;
 import javax.validation.Valid;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 public class PostController {
 
@@ -23,7 +24,6 @@ public class PostController {
         this.userRepository = userRepository;
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/post")
     public List<Post> listAll() {
 
@@ -38,7 +38,7 @@ public class PostController {
 
         User user = userRepository.findByUsername( (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
 
-        post.setAuthor(user);
+        post.setAuthor(user.getUsername());
 
         return postRepository.save(post);
 
@@ -63,7 +63,6 @@ public class PostController {
         if(postRepository.findById(id).isPresent()) {
 
             Post data = postRepository.findById(id).get();
-            //data.setName(demo.getName());
             Post update = postRepository.save(data);
             return new ResponseEntity<>(update, HttpStatus.OK);
 

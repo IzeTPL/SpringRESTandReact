@@ -18,13 +18,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import com.ait.model.User;
 
-import static com.ait.security.SecurityConstants.EXPIRATION_TIME;
-import static com.ait.security.SecurityConstants.HEADER_STRING;
-import static com.ait.security.SecurityConstants.SECRET;
-import static com.ait.security.SecurityConstants.TOKEN_PREFIX;
+import static com.ait.security.SecurityConstants.*;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
+    private User creds;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -34,7 +32,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-            User creds = new ObjectMapper()
+            creds = new ObjectMapper()
                     .readValue(req.getInputStream(), User.class);
 
             return authenticationManager.authenticate(
@@ -54,13 +52,23 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
 
+        long expirationTime = EXPIRATION_TIME;
+        if(creds.isKeepLogged()) expirationTime = LONG_EXPIRATION_TIME;
+
+        System.out.println(expirationTime);
+
         String token = Jwts.builder()
                 .setSubject(((org.springframework.security.core.userdetails.User) auth.getPrincipal()).getUsername())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(SignatureAlgorithm.HS512, SECRET.getBytes())
                 .compact();
         res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-        res.getWriter().write("{\"token\":" + "\"" + token + "\"}");
+        res.getWriter().write(
+                "{" +
+                        "\"token\":" + "\"" + token + "\"," +
+                        "\"username\":" + "\"" + auth.getName() + "\"" +
+                        "}"
+        );
         res.getWriter().flush();
         res.getWriter().close();
     }

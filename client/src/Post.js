@@ -8,36 +8,37 @@ class Post extends React.Component {
     instance = null;
 
     constructor(props) {
+
         super(props);
         this.state = {
-            selectedPost: {
-                id: '',
-                name: '',
-                author: '',
-                content: ''
-            },
             posts: [],
             empty: true,
             init: true,
         };
+
         this.instance = axios.create({
-            baseURL: 'http://localhost:8080/post',
+            baseURL: 'http://localhost:8080/',
             headers: {'Authorization': 'Bearer ' + Auth.getToken()}
         });
+
+        this.anonymous = axios.create({
+            baseURL: 'http://localhost:8080/',
+        });
+
     }
 
     render() {
         return (
             <MuiThemeProvider>
                 <div>
-                    <this.PostList posts={this.posts}/>
+                    <h2>Posty</h2>
+                    <this.PostList/>
                 </div>
             </MuiThemeProvider>
         );
     }
 
-    PostList = (props) => {
-        //const posts = props.posts;
+    PostList = () => {
         const listItems = this.state.posts.map((post) =>
             <Ui.Paper zDepth={1}>
             <Ui.ListItem key={post.id}
@@ -51,29 +52,8 @@ class Post extends React.Component {
         );
     };
 
-    PostContent = (props) => {
-
-        return(
-
-                <Ui.List>
-                    <Ui.Paper zDepth={1}>
-                        <Ui.ListItem primaryText = {props.state.selectedPost.name}/>
-                    </Ui.Paper>
-                    <Ui.Paper zDepth={1}>
-                        <Ui.ListItem primaryText = {props.state.selectedPost.content}/>
-                    </Ui.Paper>
-                    <Ui.Paper zDepth={1}>
-                        <Ui.ListItem primaryText = {props.state.selectedPost.author}/>
-                    </Ui.Paper>
-                </Ui.List>
-
-        );
-
-    };
-
-
-    refreshList = function () {
-        this.instance.get('/')
+    refresh = () => {
+        this.anonymous.get('/post')
             .then(response => {
                 let posts = response.data;
                 this.setState({
@@ -84,29 +64,15 @@ class Post extends React.Component {
 
     componentDidMount = () => {
 
-        this.refreshList();
+        this.refresh();
 
     };
 
     handlePostClick = (post) => {
 
-        console.log(post.content);
-
-        this.instance.get('/' + post.id)
-            .then(response => {
-                let selectedPost = response.data;
-                this.setState({
-                    selectedPost
-                });
-            });
-
-        console.log(post.content);
-
         this.props.history.push('/post/' + post.id);
 
     }
 }
-
-
 
 export default Post;

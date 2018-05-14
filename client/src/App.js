@@ -3,7 +3,11 @@ import './App.css';
 import Navigation from "./Navigation";
 import Login from "./Login";
 import Post from "./Post"
+import Register from "./Register"
 import {BrowserRouter, Route, Switch} from "react-router-dom";
+import ShowPost from "./ShowPost";
+import AddPost from "./AddPost";
+import EditPost from "./EditPost";
 
 class App extends Component {
 
@@ -22,10 +26,15 @@ class App extends Component {
         return (
             <BrowserRouter>
                 <div>
+                    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
                     <Navigation/>
                     <Switch>
-                        <Route path='/login' component={Login}/>
-                        <Route path='/post' component={Post}/>
+                        <Route exact path='/login' component={Login}/>
+                        <Route exact path='/register' component={Register}/>
+                        <Route exact path='/post' component={Post}/>
+                        <Route exact path='/post/add' component={AddPost}/>
+                        <Route path='/post/:postId' component={ShowPost}/>
+                        <Route path='/post/:postId/edit' component={EditPost}/>
                         <Route render={() => <h1>Page not found</h1>}/>
                     </Switch>
                 </div>

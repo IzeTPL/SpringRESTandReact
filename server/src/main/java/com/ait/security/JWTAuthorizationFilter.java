@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 
 import static com.ait.security.SecurityConstants.HEADER_STRING;
 import static com.ait.security.SecurityConstants.SECRET;
@@ -54,10 +55,17 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                     .getBody()
                     .getSubject();
 
+            Date expiration = Jwts.parser()
+                    .setSigningKey(SECRET.getBytes())
+                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .getBody()
+                    .getExpiration();
+
             User user = new User();
             user.setUsername(username);
 
-            if (username != null) {
+            if (username != null && expiration.compareTo(new Date()) > 0) {
+                System.out.println("Authorized lol");
                 return new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
             }
 
