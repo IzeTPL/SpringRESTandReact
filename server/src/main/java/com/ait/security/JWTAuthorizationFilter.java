@@ -2,6 +2,7 @@ package com.ait.security;
 
 import com.ait.model.User;
 import com.ait.repository.UserRepository;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,10 +39,23 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+        try {
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        chain.doFilter(req, res);
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            chain.doFilter(req, res);
+
+        } catch (ExpiredJwtException expiredJwtException) {
+
+            res.setStatus(401);
+            res.getWriter().write("{ \"status\" : \"" + res.getStatus() + "\"," +
+                            "\"message\" : " + "Expired token" +
+                            "}"
+            );
+            res.getWriter().flush();
+            res.getWriter().close();
+
+        }
 
     }
 

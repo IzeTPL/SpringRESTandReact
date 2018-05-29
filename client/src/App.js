@@ -8,6 +8,7 @@ import {BrowserRouter, Route, Switch} from "react-router-dom";
 import ShowPost from "./ShowPost";
 import AddPost from "./AddPost";
 import EditPost from "./EditPost";
+import Tag from "./Tag";
 
 class App extends Component {
 
@@ -33,8 +34,9 @@ class App extends Component {
                         <Route exact path='/register' component={Register}/>
                         <Route exact path='/post' component={Post}/>
                         <Route exact path='/post/add' component={AddPost}/>
-                        <Route path='/post/:postId' component={ShowPost}/>
-                        <Route path='/post/:postId/edit' component={EditPost}/>
+                        <Route path='/post/tag/:tags' component={Tag}/>
+                        <Route path='/post/id/:postId' component={ShowPost}/>
+                        <Route path='/post/id/:postId/edit' component={EditPost}/>
                         <Route render={() => <h1>Page not found</h1>}/>
                     </Switch>
                 </div>

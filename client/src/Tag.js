@@ -4,13 +4,14 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import * as axios from "axios";
 import Auth from "./Auth";
 
-class Post extends React.Component {
+class Tag extends React.Component {
     instance = null;
 
     constructor(props) {
 
         super(props);
         this.state = {
+            tags: this.props.match.params.tags,
             posts: [],
             empty: true,
             init: true,
@@ -31,7 +32,7 @@ class Post extends React.Component {
         return (
             <MuiThemeProvider>
                 <div>
-                    <h2>Posty</h2>
+                    <h2>Posty:{this.props.match.params.tags}</h2>
                     <this.PostList />
                 </div>
             </MuiThemeProvider>
@@ -40,11 +41,10 @@ class Post extends React.Component {
 
     PostList = () => {
         const listItems = this.state.posts.map((post) =>
-            <Ui.Paper zDepth={1} className="column">
+            <Ui.Paper zDepth={1}>
             <Ui.ListItem key={post.id}
                          primaryText={post.name}
-                         secondaryText={post.author}
-                         onClick={() => this.handlePostClick(post)}
+                onClick={() => this.handlePostClick(post)}
             />
             </Ui.Paper>
         );
@@ -54,7 +54,7 @@ class Post extends React.Component {
     };
 
     refresh = () => {
-        this.anonymous.get('/post')
+        this.anonymous.get('/post/tag/' + this.props.match.params.tags)
             .then(response => {
                 let posts = response.data;
                 this.setState({
@@ -76,4 +76,4 @@ class Post extends React.Component {
     }
 }
 
-export default Post;
+export default Tag;

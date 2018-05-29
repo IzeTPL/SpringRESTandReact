@@ -1,6 +1,7 @@
 package com.ait.controller;
 
 import com.ait.model.Post;
+import com.ait.repository.CommentRepository;
 import com.ait.repository.PostRepository;
 import com.ait.repository.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -18,10 +19,12 @@ public class PostController {
 
     private PostRepository postRepository;
     private UserRepository userRepository;
+    private CommentRepository commentRepository;
 
-    public PostController(PostRepository repository, UserRepository userRepository) {
+    public PostController(PostRepository repository, UserRepository userRepository, CommentRepository commentRepository) {
         this.postRepository = repository;
         this.userRepository = userRepository;
+        this.commentRepository = commentRepository;
     }
 
     @GetMapping("/post")
@@ -31,10 +34,17 @@ public class PostController {
 
     }
 
+    @GetMapping("/post/tag/{tags}")
+    public List<Post> findByTag(@PathVariable("tags") String tags) {
+
+        return postRepository.findAllByTags(tags);
+
+    }
+
     @PostMapping("/post/create")
     public Post createPost(@Valid @RequestBody Post post) {
 
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
         User user = userRepository.findByUsername( (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
 
@@ -77,7 +87,8 @@ public class PostController {
     public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
 
         postRepository.deleteById(id);
-        return new ResponseEntity<>("Entry has been deleted!", HttpStatus.OK);
+        commentRepository.deleteAllByPostId(id);
+        return new ResponseEntity<>("Entry and it's comments has been deleted!", HttpStatus.OK);
 
     }
 

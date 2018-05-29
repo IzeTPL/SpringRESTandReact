@@ -1,21 +1,16 @@
 package com.ait.model;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.List;
-
-@Document(collection = "post")
-public class Post {
+@Document(collection = "comment")
+public class Comment {
 
     @Id
     private String id;
-    private String name;
     private String content;
     private String author;
-
-    private List<String> tags;
+    private String postId;
 
     public String getId() {
         return id;
@@ -23,14 +18,6 @@ public class Post {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getAuthor() {
@@ -49,11 +36,11 @@ public class Post {
         this.content = content;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public String getPostId() {
+        return postId;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
 }
