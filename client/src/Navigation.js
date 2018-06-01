@@ -37,7 +37,7 @@ class Navigation extends React.Component {
         );
     }
 
-    RightButtons = (props) => {
+    RightButtons = () => {
 
         return(
         <div>
@@ -55,7 +55,7 @@ class Navigation extends React.Component {
 
     };
 
-    Logged = (props) => {
+    Logged = () => {
 
         return (
             <div>
@@ -69,6 +69,7 @@ class Navigation extends React.Component {
                     add
                 </Ui.IconButton>
                 <Ui.FlatButton label={Auth.getUsername()}
+                               default={true}
                                onClick={
                                    (event) => {
                                        event.preventDefault();

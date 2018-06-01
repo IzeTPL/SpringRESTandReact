@@ -41,10 +41,11 @@ class Tag extends React.Component {
 
     PostList = () => {
         const listItems = this.state.posts.map((post) =>
-            <Ui.Paper zDepth={1}>
+            <Ui.Paper zDepth={1} className="column">
             <Ui.ListItem key={post.id}
                          primaryText={post.name}
-                onClick={() => this.handlePostClick(post)}
+                         secondaryText={post.author}
+                         onClick={() => this.handlePostClick(post)}
             />
             </Ui.Paper>
         );
