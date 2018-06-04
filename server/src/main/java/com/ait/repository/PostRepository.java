@@ -8,5 +8,6 @@ import java.util.List;
 public interface PostRepository extends MongoRepository<Post, String>{
 
     List<Post> findAllByTags(String tags);
+    List<Post> findAllByAuthor(String author);
 
 }

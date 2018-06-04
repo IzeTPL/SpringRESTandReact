@@ -1,59 +1,73 @@
 import * as React from 'react'
 import * as Ui from 'material-ui'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import {Link} from 'react-router-dom'
-import Auth from "./Auth";
+import Auth from "./Security/Auth";
 import {withRouter} from "react-router-dom";
-import {Popover} from "material-ui";
 
 class Navigation extends React.Component {
+
     constructor(props) {
+
         super(props);
+
         this.state = {
-            open: false,
             userOpen: false,
+            darkTheme: false,
+            colorStyle: {
+                color: "white",
+            },
+            alignStyle: {
+                top: "-7px",
+            },
         };
-    }
+
+    };
 
     render() {
+
         return (
-            <MuiThemeProvider>
-                <div>
-                    <Ui.AppBar
-                        title="Menu"
-                        onLeftIconButtonClick={this.openNavigationDrawer}
-                        iconElementRight={<this.RightButtons />}
-                    />
-                    <Ui.Drawer open={this.state.open} docked={false} onRequestChange={(open) =>
-                        this.setState({open})}>
-                        <Ui.Menu>
-                            <Ui.MenuItem primaryText="Posts"
-                                         leftIcon={<Ui.FontIcon className="material-icons">home</Ui.FontIcon>}
-                                         containerElement={<Link to="/post"/>}></Ui.MenuItem>
-                        </Ui.Menu>
-                    </Ui.Drawer>
-                </div>
-            </MuiThemeProvider>
+            <div>
+                <Ui.AppBar
+                    title="Prosty Blog"
+                    onLeftIconButtonClick={() => {this.props.history.push('/')}}
+                    iconElementLeft={<Ui.IconButton iconClassName="material-icons" >home</Ui.IconButton>}
+                    iconElementRight={<this.RightButtons/>}
+                />
+            </div>
         );
-    }
+    };
 
     RightButtons = () => {
 
-        return(
-        <div>
-            {Auth.isUserAuthenticated() ?
-            <this.Logged /> :
-            <Ui.FlatButton label="Zaloguj"
-                           onClick={
-                               () => {
-                                   this.props.history.push('/login');
-                               }
-                           }
-            />}
-        </div>
+        return (
+            <div>
+                {Auth.isUserAuthenticated() ?
+                    <this.Logged/> :
+                    <div>
+                    <Ui.IconButton
+                        iconClassName="material-icons"
+                        tooltip="Zmień motyw"
+                        onClick={this.changeTheme}
+                        iconStyle={this.state.colorStyle}
+                    >
+                        invert_colors
+                    </Ui.IconButton>
+                    <Ui.FlatButton
+                        label="Zaloguj"
+                        labelStyle={this.state.colorStyle}
+                        onClick={
+                            () => {
+                                this.props.history.push('/login');
+                            }
+                        }
+                        style={{top: "-7px",}}
+                    />
+                    </div>
+                }
+            </div>
         );
-
     };
+
 
     Logged = () => {
 
@@ -61,26 +75,39 @@ class Navigation extends React.Component {
             <div>
                 <Ui.IconButton
                     iconClassName="material-icons"
+                    tooltip="Zmień motyw"
+                    onClick={this.changeTheme}
+                    iconStyle={this.state.colorStyle}
+                >
+                    invert_colors
+                </Ui.IconButton>
+                <Ui.IconButton
+                    iconClassName="material-icons"
                     tooltip="Dodaj Post"
+                    iconStyle={this.state.colorStyle}
                     onClick={() => {
                         this.props.history.push('/post/add');
                     }}
                 >
                     add
                 </Ui.IconButton>
-                <Ui.FlatButton label={Auth.getUsername()}
-                               default={true}
-                               onClick={
-                                   (event) => {
-                                       event.preventDefault();
+                <Ui.FlatButton
+                    label={Auth.getUsername()}
+                    labelStyle={this.state.colorStyle}
+                    icon={<Ui.FontIcon className="material-icons" style={this.state.colorStyle}>person</Ui.FontIcon>}
+                    onClick={
+                        (event) => {
+                            event.preventDefault();
 
-                                       this.setState({
-                                           userOpen: true,
-                                           anchorEl: event.currentTarget,
-                                       });
-                                   }
-                               }
-                />
+                            this.setState({
+                                userOpen: true,
+                                anchorEl: event.currentTarget,
+                            });
+                        }
+                    }
+                    style={{top: '-7px',}}
+                >
+                </Ui.FlatButton>
                 <Ui.Popover
                     open={this.state.userOpen}
                     anchorEl={this.state.anchorEl}
@@ -95,25 +122,66 @@ class Navigation extends React.Component {
                     }
                 >
                     <Ui.Menu onItemClick={
-                        (event) => {
+                        (event, menuItem, index) => {
                             event.preventDefault();
-                            Auth.deauthenticateUser();
-                            this.props.history.push('/');
-                            window.location.reload();
+
+                            if (index === 0) {
+
+                                this.props.history.push('/user/' + Auth.getUsername());
+
+                            }
+
+                            if (index === 2) {
+
+                                this.props.history.push('/user');
+
+                            }
+
+                            if (index === 1) {
+
+                                Auth.deauthenticateUser();
+                                this.props.history.push('/');
+                                window.location.reload();
+
+                            }
+
                         }
                     }>
-                        <Ui.MenuItem primaryText="Wyloguj" />
+                        <Ui.MenuItem primaryText="Moje posty"/>
+                        <Ui.MenuItem primaryText="Wyloguj"/>
+                        {Auth.getRole() === "admin" ? <Ui.MenuItem primaryText="Panel Administratora"/> : <div></div>}
                     </Ui.Menu>
                 </Ui.Popover>
             </div>
         )
     };
 
-    openNavigationDrawer = (event) => {
-        this.setState({
-            open: true,
+    changeTheme = () => {
+
+        this.setState((oldState) => {
+            return {
+                darkTheme: !oldState.darkTheme,
+            };
         });
+
+        if(!this.state.darkTheme) {
+            this.setState({
+                colorStyle: {
+                    color: "black"
+                }
+            });
+        } else {
+            this.setState({
+                colorStyle: {
+                    color: "white"
+                }
+            });
+        }
+
+        this.props.setTheme(this.state.darkTheme);
+
     };
+
 }
 
 export default withRouter(Navigation);

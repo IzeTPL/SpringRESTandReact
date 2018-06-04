@@ -1,7 +1,6 @@
 import * as React from 'react'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import * as Ui from 'material-ui'
-import Auth from "./Auth";
+import Auth from "../Security/Auth";
 import * as axios from "axios/index";
 
 class AddPost extends React.Component {
@@ -27,21 +26,18 @@ class AddPost extends React.Component {
     render() {
 
         return (
-
-            <MuiThemeProvider>
                 <div>
-                    <h2>AddPost</h2>
                     <Ui.Paper zDepth={3} style={this.style} className="column">
                         <div>
                             <Ui.TextField floatingLabelText="Tytuł postu" onChange={this.onTitleChange} />
                         </div>
                         <div>
-                            <Ui.TextField floatingLabelText="Treść" multiLine="true" onChange={this.onContentChange}/>
+                            <Ui.TextField floatingLabelText="Treść" multiLine={true} onChange={this.onContentChange}/>
                         </div>
                         <div>
-                            <Ui.TextField floatingLabelText="Tag 1" multiLine="true" onChange={this.onTag1Change}/>
-                            <Ui.TextField floatingLabelText="Tag 2" multiLine="true" onChange={this.onTag2Change}/>
-                            <Ui.TextField floatingLabelText="Tag 3" multiLine="true" onChange={this.onTag3Change}/>
+                            <Ui.TextField floatingLabelText="Tag 1" multiLine={true} onChange={this.onTag1Change}/>
+                            <Ui.TextField floatingLabelText="Tag 2" multiLine={true} onChange={this.onTag2Change}/>
+                            <Ui.TextField floatingLabelText="Tag 3" multiLine={true} onChange={this.onTag3Change}/>
                         </div>
                         <div>
                             <form>
@@ -50,8 +46,6 @@ class AddPost extends React.Component {
                         </div>
                     </Ui.Paper>
                 </div>
-            </MuiThemeProvider>
-
         );
 
     }

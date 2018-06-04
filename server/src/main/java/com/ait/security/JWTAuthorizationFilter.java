@@ -2,8 +2,11 @@ package com.ait.security;
 
 import com.ait.model.User;
 import com.ait.repository.UserRepository;
+import com.mongodb.MongoWriteException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +38,15 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
         String header = req.getHeader(HEADER_STRING);
 
         if (header == null || !header.startsWith(TOKEN_PREFIX)) {
-            chain.doFilter(req, res);
+            try {
+
+                chain.doFilter(req, res);
+
+            } catch (MongoWriteException e) {
+
+                System.out.println("AuthorizationFilter: User already Exist");
+
+            }
             return;
         }
 

@@ -4,6 +4,8 @@ import com.ait.model.Post;
 import com.ait.repository.CommentRepository;
 import com.ait.repository.PostRepository;
 import com.ait.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -12,6 +14,7 @@ import com.ait.model.User;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin
 @RestController
@@ -28,9 +31,9 @@ public class PostController {
     }
 
     @GetMapping("/post")
-    public List<Post> listAll() {
+    public Page<Post> listAll(Pageable pageable) {
 
-        return postRepository.findAll();
+        return postRepository.findAll(pageable);
 
     }
 
@@ -41,10 +44,15 @@ public class PostController {
 
     }
 
+    @GetMapping("/user/{user}")
+    public List<Post> findByAuthor(@PathVariable("user") String user) {
+
+        return postRepository.findAllByAuthor(user);
+
+    }
+
     @PostMapping("/post/create")
     public Post createPost(@Valid @RequestBody Post post) {
-
-        System.out.println(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
 
         User user = userRepository.findByUsername( (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
 
@@ -72,23 +80,41 @@ public class PostController {
 
         if(postRepository.findById(id).isPresent()) {
 
-            Post data = postRepository.findById(id).get();
-            Post update = postRepository.save(data);
+            Post update = postRepository.save(post);
             return new ResponseEntity<>(update, HttpStatus.OK);
 
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-
     }
 
     @DeleteMapping("/post/{id}")
     public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
 
-        postRepository.deleteById(id);
-        commentRepository.deleteAllByPostId(id);
-        return new ResponseEntity<>("Entry and it's comments has been deleted!", HttpStatus.OK);
+        User user = userRepository.findByUsername( (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
+
+        Post post;
+
+        if(postRepository.findById(id).isPresent()) {
+
+            post = postRepository.findById(id).get();
+
+        } else {
+
+            return new ResponseEntity<>("There is no such post!", HttpStatus.NOT_FOUND);
+
+        }
+
+        if(Objects.equals(user.getRole(), "admin") || Objects.equals(user.getRole(), "moderator") || Objects.equals(user.getUsername(), post.getAuthor())) {
+
+            postRepository.deleteById(id);
+            commentRepository.deleteAllByPostId(id);
+            return new ResponseEntity<>("Entry and it's comments has been deleted!", HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity<>("You can't do this!", HttpStatus.FORBIDDEN);
 
     }
 

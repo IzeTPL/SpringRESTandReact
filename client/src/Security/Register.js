@@ -1,7 +1,8 @@
 import * as React from 'react'
 import * as Ui from 'material-ui'
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Auth from "./Auth";
+import {cyan500, pink500} from 'material-ui/styles/colors';
+
+
 class Register extends React.Component {
 
     constructor(props) {
@@ -11,9 +12,16 @@ class Register extends React.Component {
             user: {
                 username: '',
                 password: ''
-            }
+            },
+            open: false,
+            push: false,
+            message: "message placeholder",
+            snackbarStyle: {
+                backgroundColor: cyan500,
+            },
         };
     }
+
     style = {
         height: 250,
         width: 300,
@@ -21,9 +29,9 @@ class Register extends React.Component {
         display: 'block',
         padding: '20px 20px 20px 20px'
     };
+
     render() {
         return (
-            <MuiThemeProvider>
                 <div>
                     <Ui.Paper zDepth={3} style={this.style}>
                         <div>
@@ -41,10 +49,10 @@ class Register extends React.Component {
                         <div>
                             <Ui.FlatButton labelStyle={{ fontSize: '10px' }} label="Masz już konto? Zaloguj się" primary={true} onClick={ () => { this.props.history.push('/login') } }/>
                         </div>
-                        <div>{this.state.error}</div>
                     </Ui.Paper>
+                    <Ui.Snackbar bodyStyle={this.state.snackbarStyle} open={this.state.open} message={this.state.message}
+                                 onRequestClose={this.onRequestClose} autoHideDuration={3000}/>
                 </div>
-            </MuiThemeProvider>
         );
     }
 
@@ -64,6 +72,18 @@ class Register extends React.Component {
         });
     };
 
+    onRequestClose = () => {
+
+        if (this.state.push) {
+            this.props.history.push('/');
+        }
+
+        this.setState({
+            open: false,
+        });
+
+    };
+
     handleRegister = (event) => {
         const loginUrl = 'http://localhost:8080/register';
         const xhr = new XMLHttpRequest();
@@ -75,24 +95,33 @@ class Register extends React.Component {
                 // sukces
                 // usuwamy bledy
                 this.setState({
-                    errors: {}
+                    errors: {},
+                    message: "Pomyślnie utworzono użytkownika " + this.state.user.username + "! Nastąpi przekierowanie...",
+                    snackbarStyle: {
+                        backgroundColor: cyan500,
+                    },
+                    open: true,
+                    push: true,
                 });
-                // zapisujemy token
-                //Auth.authenticateUser(xhr.response.token);
-                // zmieniamy routing
-                this.props.history.push('/login');
             } else {
                 // cos poszlo nie tak
                 // pobieramy informacje o bledach z
                 const error = xhr.response.message ? xhr.response.message : {};
                 this.setState({
-                    error
+                    error,
+                    message: "Podana nazwa użytkownika jest zajęta!",
+                    snackbarStyle: {
+                    backgroundColor: pink500,
+                    },
+                    open: true,
                 });
             }
         });
         xhr.send(JSON.stringify(this.state.user));
         event.preventDefault()
+
     };
 
 }
+
 export default Register;

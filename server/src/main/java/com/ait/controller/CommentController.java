@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @CrossOrigin
 @RestController
@@ -75,10 +76,30 @@ public class CommentController {
     }
 
     @DeleteMapping("/comment/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable("id") String id) {
+    public ResponseEntity<String> deleteComment(@PathVariable("id") String id) {
 
-        commentRepository.deleteById(id);
-        return new ResponseEntity<>("Entry has been deleted!", HttpStatus.OK);
+        User user = userRepository.findByUsername( (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal() );
+
+        Comment comment;
+
+        if(commentRepository.findById(id).isPresent()) {
+
+            comment = commentRepository.findById(id).get();
+
+        } else {
+
+            return new ResponseEntity<>("There is no such post!", HttpStatus.NOT_FOUND);
+
+        }
+
+        if(Objects.equals(user.getRole(), "admin") || Objects.equals(user.getRole(), "moderator") || Objects.equals(user.getUsername(), comment.getAuthor())) {
+
+            commentRepository.deleteById(id);
+            return new ResponseEntity<>("Entry has been deleted!", HttpStatus.OK);
+
+        }
+
+        return new ResponseEntity<>("You can't do this!", HttpStatus.FORBIDDEN);
 
     }
 
